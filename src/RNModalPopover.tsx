@@ -5,33 +5,45 @@ import { MULTIPLE_POPOVER_WARNING } from './Constants';
 import { PopoverProps, Rect, ModalPopoverState, Point } from './Types';
 
 interface RNModalPopoverProps extends PopoverProps {
-  statusBarTranslucent?: boolean
+  statusBarTranslucent?: boolean;
   fromRect?: Rect;
   fromRef?: RefObject<View>;
   displayArea?: Rect;
 }
 
-export default class RNModalPopover extends Component<RNModalPopoverProps, ModalPopoverState> {
+export default class RNModalPopover extends Component<
+  RNModalPopoverProps,
+  ModalPopoverState
+> {
   state = {
-    visible: false
-  }
+    visible: false,
+  };
 
   private static isShowingInModal = false;
 
   componentDidMount(): void {
     if (this.props.isVisible) {
-      if (RNModalPopover.isShowingInModal) console.warn(MULTIPLE_POPOVER_WARNING);
-      else this.setState({ visible: true });
+      if (RNModalPopover.isShowingInModal)
+        console.warn(MULTIPLE_POPOVER_WARNING);
+      else setTimeout(() => this.setState({ visible: true }), 100);
     }
   }
 
-  componentDidUpdate(prevProps: RNModalPopoverProps, prevState: ModalPopoverState): void {
+  componentDidUpdate(
+    prevProps: RNModalPopoverProps,
+    prevState: ModalPopoverState
+  ): void {
     if (this.props.isVisible && !prevProps.isVisible) {
-      if (RNModalPopover.isShowingInModal) console.warn(MULTIPLE_POPOVER_WARNING);
-      else this.setState({ visible: true });
+      if (RNModalPopover.isShowingInModal)
+        console.warn(MULTIPLE_POPOVER_WARNING);
+      else setTimeout(() => this.setState({ visible: true }), 100);
     }
 
-    if (!this.state.visible && prevState.visible && this.props.onCloseComplete) {
+    if (
+      !this.state.visible &&
+      prevState.visible &&
+      this.props.onCloseComplete
+    ) {
       /*
        * Don't run this callback until after update, so that <Modal> is no longer active
        * Need to wait 50ms to make sure <Modal> is completely gone, in case
@@ -42,17 +54,17 @@ export default class RNModalPopover extends Component<RNModalPopoverProps, Modal
   }
 
   render(): ReactNode {
-    const {
-      statusBarTranslucent,
-      onCloseStart,
-      onRequestClose
-    } = this.props;
+    const { statusBarTranslucent, onCloseStart, onRequestClose } = this.props;
     const { visible } = this.state;
 
     return (
       <Modal
         transparent={true}
-        supportedOrientations={['portrait', 'portrait-upside-down', 'landscape']}
+        supportedOrientations={[
+          'portrait',
+          'portrait-upside-down',
+          'landscape',
+        ]}
         hardwareAccelerated={true}
         visible={visible}
         statusBarTranslucent={statusBarTranslucent}
@@ -60,7 +72,8 @@ export default class RNModalPopover extends Component<RNModalPopoverProps, Modal
           RNModalPopover.isShowingInModal = true;
         }}
         // Handles android back button
-        onRequestClose={onRequestClose}>
+        onRequestClose={onRequestClose}
+      >
         <AdaptivePopover
           {...this.props}
           onCloseStart={() => {
